@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manchester United Fan Token</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.8.0/web3.min.js"></script>
+    <style>
+        :root {
+            --united-red: #d71920;
+            --united-dark: #212529;
+        }
+        .united-red { background-color: var(--united-red); }
+        .united-red-text { color: var(--united-red); }
+        .hover-united-red:hover { background-color: #a51416; }
+        
+        /* Countdown styles */
+        .countdown-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .countdown-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            min-width: 100px;
+        }
+        .countdown-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            line-height: 1;
+        }
+        .countdown-label {
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+        
+        /* Card animations */
+        .stats-card {
+            transition: transform 0.3s ease;
+        }
+        .stats-card:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-black text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="text-2xl font-bold">MUFT</div>
+            <div class="space-x-6">
+                <a href="#about" class="hover:text-red-600">About</a>
+                <a href="#tokenomics" class="hover:text-red-600">Tokenomics</a>
+                <a href="#roadmap" class="hover:text-red-600">Roadmap</a>
+                <a href="#buy" class="hover:text-red-600">How to Buy</a>
+                <a href="#contact" class="hover:text-red-600">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section with Countdown -->
+    <header class="united-red text-white py-20">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-5xl font-bold mb-6">Manchester United Fans Token</h1>
+            <p class="text-xl mb-4">Launching During Arsenal vs Manchester United</p>
+            
+            <!-- Countdown Timer -->
+            <div class="countdown-container">
+                <h2 class="text-2xl font-bold mb-4">Token Launch Countdown</h2>
+                <div class="flex justify-center gap-4 mb-4">
+                    <div class="countdown-box">
+                        <div id="days" class="countdown-number">00</div>
+                        <div class="countdown-label">Days</div>
+                    </div>
+                    <div class="countdown-box">
+                        <div id="hours" class="countdown-number">00</div>
+                        <div class="countdown-label">Hours</div>
+                    </div>
+                    <div class="countdown-box">
+                        <div id="minutes" class="countdown-number">00</div>
+                        <div class="countdown-label">Minutes</div>
+                    </div>
+                    <div class="countdown-box">
+                        <div id="seconds" class="countdown-number">00</div>
+                        <div class="countdown-label">Seconds</div>
+                    </div>
+                </div>
+                <p class="text-lg">January 12th, 2025 - 19:30 UTC</p>
+            </div>
+
+            <!-- Early Supporter Box -->
+            <div class="max-w-2xl mx-auto bg-black bg-opacity-20 p-6 rounded-lg mb-8">
+                <h2 class="text-2xl font-bold mb-4">🚀 Early Supporter Opportunity</h2>
+                <p class="mb-4">Contribute ETH now and receive MUFT tokens at launch!</p>
+                <div class="bg-white text-black p-4 rounded-lg mb-4 break-all">
+                    <p class="font-mono text-sm mb-2">Contribution Address:</p>
+                    <p class="font-bold select-all" id="contributionAddress">0x5ac39246510979d1011eA4C7c6F1F899ACE669CC</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left mb-4">
+                    <div>
+                        <p class="font-bold">Minimum Contribution:</p>
+                        <p>0.1 ETH</p>
+                    </div>
+                    <div>
+                        <p class="font-bold">Token Distribution:</p>
+                        <p>At launch time</p>
+                    </div>
+                </div>
+                <button onclick="copyAddress()" class="bg-white text-red-600 px-8 py-3 rounded-md font-bold hover:bg-gray-100 transition">
+                    Copy Address
+                </button>
+            </div>
+            <h3 class="font-bold mb-4">Read the Whitepaper:</h3>
+            <a 
+                href="whitepaper.html" 
+                target="_blank" 
+                class="bg-blue-600 text-white px-8 py-3 rounded-md font-bold hover:bg-blue-700 transition inline-block">
+                View Whitepaper
+            </a>
+            <a 
+                href="whitepaper.html" 
+                download 
+                class="bg-white text-red-600 px-8 py-3 rounded-md font-bold hover:bg-gray-100 transition inline-block">
+                Download Whitepaper
+            </a>
+        </div>
+    </header>
+
+    <!-- Live Stats -->
+    <section class="py-12 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="stats-card bg-gray-50 p-6 rounded-lg shadow-md text-center">
+                    <h3 class="text-lg font-bold mb-2">Total Supply</h3>
+                    <p id="totalSupply" class="text-2xl united-red-text">1T MUFT</p>
+                </div>
+                <div class="stats-card bg-gray-50 p-6 rounded-lg shadow-md text-center">
+                    <h3 class="text-lg font-bold mb-2">Burned</h3>
+                    <p id="burnedTokens" class="text-2xl united-red-text">Loading...</p>
+                </div>
+                <div class="stats-card bg-gray-50 p-6 rounded-lg shadow-md text-center">
+                    <h3 class="text-lg font-bold mb-2">Holders</h3>
+                    <p id="holders" class="text-2xl united-red-text">Loading...</p>
+                </div>
+                <div class="stats-card bg-gray-50 p-6 rounded-lg shadow-md text-center">
+                    <h3 class="text-lg font-bold mb-2">Market Cap</h3>
+                    <p id="marketCap" class="text-2xl united-red-text">Loading...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-20">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-3xl font-bold mb-8 united-red-text">About Us</h2>
+            <p class="max-w-2xl mx-auto text-lg mb-12">
+                Welcome to the official Manchester United Fans Token! Inspired by the passion of United fans worldwide, 
+                this token combines fun and fandom with serious tokenomics and security features.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-bold mb-4">Security First</h3>
+                    <ul class="text-left space-y-2">
+                        <li>• Anti-Bot Protection</li>
+                        <li>• Liquidity Locked</li>
+                        <li>• Contract Audited</li>
+                        <li>• Ownership Renounced</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-bold mb-4">Community Driven</h3>
+                    <ul class="text-left space-y-2">
+                        <li>• DAO Governance</li>
+                        <li>• Regular AMAs</li>
+                        <li>• Community Events</li>
+                        <li>• Transparent Team</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-bold mb-4">Utility</h3>
+                    <ul class="text-left space-y-2">
+                        <li>• Exclusive NFTs</li>
+                        <li>• Staking Rewards</li>
+                        <li>• Fan Governance</li>
+                        <li>• Special Access</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tokenomics Section -->
+    <section id="tokenomics" class="py-20 bg-black text-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12 united-red-text">Tokenomics</h2>
+            
+            <!-- Token Distribution -->
+            <div class="mb-12">
+                <h3 class="text-2xl font-bold mb-6 text-center">Token Distribution</h3>
+                <div class="bg-gray-900 p-8 rounded-lg">
+                    <ul class="space-y-4">
+                        <li class="flex justify-between">
+                            <span>Public Distribution:</span>
+                            <span class="font-bold">70%</span>
+                        </li>
+                        <li class="flex justify-between">
+                            <span>Liquidity Providers:</span>
+                            <span class="font-bold">10%</span>
+                        </li>
+                        <li class="flex justify-between">
+                            <span>Exchange Listings:</span>
+                            <span class="font-bold">10%</span>
+                        </li>
+                        <li class="flex justify-between">
+                            <span>Marketing & Partnerships:</span>
+                            <span class="font-bold">10%</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Transaction Fees -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <div class="bg-gray-900 p-8 rounded-lg">
+                    <h3 class="text-2xl font-bold mb-6">Supply & Limits</h3>
+                    <ul class="space-y-4">
+                        <li class="flex justify-between">
+                            <span>Total Supply:</span>
+                            <span class="font-bold">1 Trillion MUFT</span>
+                        </li>
+                        <li class="flex justify-between">
+                            <span>Max Wallet:</span>
+                            <span class="font-bold">1% of Supply(varies)</span>
+                        </li>
+                        <li class="flex justify-between">
+                            <span>Max Transaction:</span>
+                            <span class="font-bold">0.5% of Supply(varies)</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="bg-gray-900 p-8 rounded-lg">
+                    <h3 class="text-2xl font-bold mb-6">Transaction Tax</h3>
+                    <ul class="space-y-4">
+                        <li class="flex justify-between">
+                            <span>Liquidity:</span>
+                            <span class="font-bold">2.5%</span>
+                        </li>
+                        <li class="flex justify-between">
+                            <span>Burn:</span>
+                            <span class="font-bold">1.5%</span>
+                        </li>
+                        <li class="flex justify-between">
+                            <span>Development:</span>
+                            <span class="font-bold">1%</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Victory Burn Mechanism -->
+            <div class="mt-12">
+                <h3 class="text-2xl font-bold mb-6 text-center">Victory Burn Mechanism</h3>
+                <div class="bg-gray-900 p-8 rounded-lg">
+                    <p class="text-lg mb-6">Automatic token burns for every Manchester United victory:</p>
+                    <ul class="space-y-4">
+                        <li class="flex justify-between">
+                            <span>Premier League Victory:</span>
+                            <span class="font-bold">0.2%</span>
+                        </li>
+                        <li class="flex justify-between">
+                            <span>Champions/Europa League Victory:</span>
+                            <span class="font-bold">0.3%</span>
+                        </li>
+                        <li class="flex justify-between">
+                            <span>FA Cup Victory:</span>
+                            <span class="font-bold">0.25%</span>
+                        </li>
+                        <li class="flex justify-between">
+                            <span>League Cup Victory:</span>
+                            <span class="font-bold">0.1%</span>
+                        </li>
+                        <li class="flex justify-between">
+                            <span>Trophy Win Bonus Burn:</span>
+                            <span class="font-bold">1%</span>
+                        </li>
+                    </ul>
+                    <p class="mt-6 text-sm opacity-80">* Burns are executed automatically through smart contract within 24 hours of each victory</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Roadmap Section -->
+    <section id="roadmap" class="py-20">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12 united-red-text">Roadmap</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-bold mb-4">Phase 1</h3>
+                    <ul class="space-y-2 text-left">
+                        <li>• Community Building</li>
+                        <li>• liquidity Collection</li>
+                        <li>• Token Launch</li>
+                        <li>• Initial Marketing</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-bold mb-4">Phase 2</h3>
+                    <ul class="space-y-2 text-left">
+                        <li>• CoinGecko Listing</li>
+                        <li>• CMC Listing</li>
+                        <li>• Community Growth</li>
+                        <li>• Partnerships</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-bold mb-4">Phase 3</h3>
+                    <ul class="space-y-2 text-left">
+                        <li>• CEX Listings</li>
+                        <li>• NFT Collection</li>
+                        <li>• Staking Platform</li>
+                        <li>• Marketing Push</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-bold mb-4">Phase 4</h3>
+                    <ul class="space-y-2 text-left">
+                        <li>• Major CEX Listing</li>
+                        <li>• Fan DAO Launch</li>
+                        <li>• Mobile App</li>
+                        <li>• Global Expansion</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How to Buy Section -->
+    <section id="buy" class="py-20 bg-black text-white">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-3xl font-bold mb-12 united-red-text">How to Buy (###coming soon###)</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+                <div class="bg-gray-900 p-6 rounded-lg">
+                    <h3 class="text-xl font-bold mb-4">Step 1</h3>
+                    <p>Download MetaMask and add ETH</p>
+                </div>
+                <div class="bg-gray-900 p-6 rounded-lg">
+                    <h3 class="text-xl font-bold mb-4">Step 2</h3>
+                    <p>Connect your wallet to Uniswap</p>
+                </div>
+                <div class="bg-gray-900 p-6 rounded-lg">
+                    <h3 class="text-xl font-bold mb-4">Step 3</h3>
+                    <p>Swap ETH for MUFT using our contract address</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How to Participate Section -->
+    <section class="py-20 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12 united-red-text">How to Participate</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-gray-50 p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-bold mb-4">Step 1: Prepare ETH</h3>
+                    <ul class="space-y-2 text-left">
+                        <li>• Ensure you have ETH in your wallet</li>
+                        <li>• Minimum contribution: 0.1 ETH</li>
+                        <li>• Maximum contribution: 5 ETH</li>
+                    </ul>
+                </div>
+                <div class="bg-gray-50 p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-bold mb-4">Step 2: Send ETH</h3>
+                    <ul class="space-y-2 text-left">
+                        <li>• Copy the contribution address</li>
+                        <li>• Send ETH from your wallet</li>
+                        <li>• Save your transaction hash</li>
+                    </ul>
+                </div>
+                <div class="bg-gray-50 p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-bold mb-4">Step 3: Receive MUFT</h3>
+                    <ul class="space-y-2 text-left">
+                        <li>• Tokens distributed at launch</li>
+                        <li>• Distribution based on contribution</li>
+                        <li>• Automatic delivery to your wallet</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-3xl font-bold mb-8 united-red-text">Join Our Community(coming soon)</h2>
+            <p class="max-w-2xl mx-auto text-lg mb-8">
+                Join our growing community and stay updated with the latest news and developments!
+            </p>
+            <div class="flex justify-center space-x-4">
+                <a href="https://t.me" target="_blank" class="united-red text-white px-8 py-3 rounded-md font-bold hover-united-red">
+                    Telegram
+                </a>
+                <a href="https://twitter.com" target="_blank" class="united-red text-white px-8 py-3 rounded-md font-bold hover-united-red">
+                    Twitter
+                </a>
+                <a href="https://discord.gg/mufc" target="_blank" class="united-red text-white px-8 py-3 rounded-md font-bold hover-united-red">
+                    Discord
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Important Notice -->
+    <section class="py-12 bg-red-50">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-2xl font-bold mb-4 united-red-text">Important Notice</h2>
+            <div class="max-w-3xl mx-auto">
+                <ul class="text-left space-y-2">
+                    <li>• Only send ETH from a wallet you control</li>
+                    <li>• Minimum contribution is 0.1 ETH</li>
+                    <li>• Maximum contribution is 5 ETH</li>
+                    <li>• Save your transaction hash for verification</li>
+                    <li>• Token distribution will occur within 24 hours of launch</li>
+                    <li>• Join our Telegram for support and updates</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                <div>
+                    <h3 class="font-bold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#about" class="hover:text-red-600">About</a></li>
+                        <li><a href="#tokenomics" class="hover:text-red-600">Tokenomics</a></li>
+                        <li><a href="#roadmap" class="hover:text-red-600">Roadmap</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold mb-4">Resources</h3>
+                    <ul class="space-y-2">
+                        <li><a href="whitepaper.html" class="hover:text-red-600">Whitepaper</a></li>
+                        <li><a href="#" class="hover:text-red-600">Audit Report</a></li>
+                        <li><a href="#" class="hover:text-red-600">Documentation</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold mb-4">Community(coming soon)</h3>
+                    <ul class="space-y-2">
+                        <li><a href="https://t.me" class="hover:text-red-600">Telegram</a></li>
+                        <li><a href="https://twitter.com" class="hover:text-red-600">Twitter</a></li>
+                        <li><a href="https://discord.gg/mufc" class="hover:text-red-600">Discord</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="text-center pt-8 border-t border-gray-800">
+                <p>&copy; 2024 Manchester United Fan Token. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Countdown Timer
+        function updateCountdown() {
+            const launchDate = new Date('2025-01-12T19:30:00Z');
+            const now = new Date();
+            const difference = launchDate - now;
+    
+            if (difference > 0) {
+                const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+    
+                document.getElementById('days').textContent = days.toString().padStart(2, '0');
+                document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+                document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+                document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+            } else {
+                // Launch time has passed
+                document.getElementById('days').textContent = '00';
+                document.getElementById('hours').textContent = '00';
+                document.getElementById('minutes').textContent = '00';
+                document.getElementById('seconds').textContent = '00';
+                
+                const countdownContainer = document.querySelector('.countdown-container');
+                if (countdownContainer) {
+                    countdownContainer.innerHTML = '<h2 class="text-2xl font-bold">Token Launch is Live! 🚀</h2>';
+                }
+            }
+        }
+
+        // Update countdown every second
+        setInterval(updateCountdown, 1000);
+        updateCountdown(); // Initial call
+
+        // Copy address function
+        function copyAddress() {
+            const address = document.getElementById('contributionAddress').textContent;
+            navigator.clipboard.writeText(address);
+            alert('Address copied to clipboard!');
+        }
+    </script>
+</body>
+</html> 
+
